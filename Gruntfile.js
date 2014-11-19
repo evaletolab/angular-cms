@@ -42,7 +42,7 @@ module.exports = function (grunt) {
           all: {
             dest: 'demo/depends.js',
             mainFiles:{
-                'showdown':['src/showdown.js']
+                'showdown':['src/showdown.js','extensions/github.js','extensions/table.js','extensions/twitter.js']
             },
             dependencies:{
                 'angular':['jquery','bootstrap','showdown']

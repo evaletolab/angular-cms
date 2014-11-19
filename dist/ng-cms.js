@@ -1,12 +1,13 @@
 (function (ng) {'use strict';
     var defaultSettings={
-    	zenEdit:true,
+    	zenEdit:true,		// fullscreen edit on github
+    	ttlCache:86400000,  // 24h
         root:'',
-        githubRepo:'aerobatic/markdown-content',
+        githubRepo:'<user>/<repo>',
         githubApi:'https://api.github.com/repos/',
         githubToken:'2e36ce76cfb03358f0a38630007840e7cb432a24'
     }
-    ng.module('ngCMS',['ngRoute']).constant('settings', angular.extend(defaultSettings,ngCMSSettings));  
+    ng.module('ngCMS',['ngRoute']).constant('settings', angular.extend(defaultSettings,ngCMSSettings||{}));  
 })(angular);
 
 (function (ng, undefined) {'use strict';
@@ -24,7 +25,6 @@
 
         //
         // setup the scope
-        $scope.article=$routeParams.article;
         $scope.settings=settings;
 
         // return true if a name (eg. the/path) is include in the path
@@ -63,7 +63,7 @@
               return;
             }
 
-            var article = _.find(index.docArticles, {'slug': $routeParams.article});
+            var article = gitHubContent.find($routeParams.article);
             if (!article){
                 return $location.path('404');
             }
@@ -81,8 +81,8 @@
     // define factories
     //
     ng.module('ngCMS')
+        .factory('localCache',localCache)
         .factory('gitHubContent', gitHubContent) 
-
 
 
     //
@@ -116,6 +116,43 @@
     }
 
 
+    //
+    // factory localCache, keep external markdown in cache until settings.ttlCache
+    //
+    localCache.$inject=['$rootScope','$http','$q','$log','settings'];
+    function localCache($rootScope, $http, $q, $log,settings) {
+
+      function getKey(cacheKey){
+        // if there's a TTL that's expired, flush this item
+        var ttl = window.localStorage.getItem(cacheKey + 'cachettl');
+        if ( ttl && ttl < +new Date() ){
+          window.localStorage.removeItem( cacheKey );
+          window.localStorage.removeItem( cacheKey + 'cachettl' );
+          ttl = 'expired';
+          return null
+        }
+        var value=window.localStorage.getItem(cacheKey)
+        return  JSON.parse(value)
+      }
+
+      function setKey(cacheKey,value){
+        try {
+          window.localStorage.setItem( cacheKey, JSON.stringify(strdata) );
+          window.localStorage.setItem( cacheKey + 'cachettl', +new Date() + settings.ttlCache );
+        } catch (e) {
+          window.localStorage.removeItem( cacheKey );
+          window.localStorage.removeItem( cacheKey + 'cachettl' );
+        }        
+      }
+
+      //
+      //
+      return{
+        get:getKey,
+        set:setKey
+      }
+    }
+ 
     //
     // factory gitHubContent, help to load markdown content from github
     //
@@ -199,11 +236,9 @@
         var loads={}
         return {
             initialize: function(custom) {
-              console.log('settings',settings)
               angular.extend(settings,custom)
               markdownRepo = settings.githubApi+settings.githubRepo;
               githubToken='access_token='+settings.githubToken
-              console.log('settings',settings)
 
               // Go fetch the GitHub tree with references to our Markdown content blobs
               var apiUrl = markdownRepo + '/git/trees/master?recursive=1'+'&'+githubToken;
@@ -221,6 +256,14 @@
             contentIndex: function() {
               return contentIndexDeferred.promise;
             },
+            find:function(slug){
+              // content is not ready
+              if(!contentIndex)return '';
+
+              var article = _.find(contentIndex.docArticles, {'slug':slug});
+              if(article) return article;
+              return _.find(contentIndex.pages, {'slug':slug});
+            },
             loadSlug:function(slug){
               // article is in cache
               if(loads[slug])
@@ -229,10 +272,11 @@
               // content is not ready
               if(!contentIndex)return '';
 
-              var article = _.find(contentIndex.docArticles, {'slug': slug});
+              var article = this.find(slug);
               return this.load(article)
             },
             load: function(object) {
+              if(!object) return '';
               var apiUrl = markdownRepo+'/contents/'+object.gitPath+'?'+githubToken;
               var accept={'Accept':'application/vnd.github.VERSION.raw'}
 
@@ -244,7 +288,6 @@
               $log.debug("fetching markdown content", apiUrl);
               $http({method:'GET', url:apiUrl,headers:accept})
                 .success(function(content) {
-                    $log.info('Content received ',content.length);
                   loads[object.slug].resolve(content);
                 }).error(function(err) {
                   $log.error("Error returned from API proxy", err);
@@ -335,10 +378,10 @@
 
                         //
                         // load markdown file from gihub repository
-                    } else if(attrs.markdownArticle){
-                        attrs.$observe('markdownArticle', function(markdownArticle){
-                            if(!markdownArticle)return;
-                            gitHubContent.loadSlug(markdownArticle).then(function(content) {
+                    } else if(attrs.markdownSlug){
+                        attrs.$observe('markdownSlug', function(markdownSlug){
+                            if(!markdownSlug)return;
+                            gitHubContent.loadSlug(markdownSlug).then(function(content) {
                               loadHtml(element,$sce.trustAsHtml(converter.makeHtml(content)).toString());
                             });
                         })                        
@@ -376,5 +419,5 @@
 })(angular);
 
 angular.module('ngCMS').run(['$templateCache', function ($templateCache) {
-	$templateCache.put('html/ng-cms.doc.html', '<div ng-controller="CMSCtrl"> <markdown markdown-article="{{article}}"></markdown> <div class="clearfix"> <hr/> <button class="btn btn-primary pull-right " edit-markdown="{{article}}">Improve this page</button> </div> </div>');
+	$templateCache.put('html/ng-cms.doc.html', '<div ng-controller="ContentCtrl"> <markdown markdown-slug="{{article}}"></markdown> <div class="clearfix"> <hr/> <button class="btn btn-primary pull-right btn-xs" edit-markdown="{{article}}">Improve this page</button> </div> </div>');
 }]);

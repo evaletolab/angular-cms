@@ -44,8 +44,10 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">API</a></li>
-            <li><a href="#">RDF</a></li>
+            <li><a href="mailto:evaleto@gmail.com">Contact</a></li>
+            <li ng-repeat="article in docArticles | filter : filterContent" class="visible-xs">
+              <a ng-href="{{hrefBuild(article.urlPath)}}">{{article.title}}</a> 
+            </li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search..." ng-model="filterContent">
@@ -59,7 +61,10 @@
       <!-- LEFT PANE -->
         <div class="col-sm-4 col-lg-3 sidebar">
           <ul class="nav nav-sidebar">
-           <li ng-repeat="article in docArticles | filter : filterContent" ng-class="{'active':isActiveDoc(article.slug)}")>
+           <li><a ng-href="/demo">home</a></li>
+           <li><a ng-href="mixing">angular&github mixing</a></li>
+           <li><h5>{{settings.githubRepo}}</h5></li>
+           <li ng-repeat="article in docArticles | filter : filterContent" ng-class="{'active':isActiveDoc(article.slug)}">
               <a ng-href="{{hrefBuild(article.urlPath)}}">{{article.title}}</a> 
            </li>
           </ul>

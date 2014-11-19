@@ -11,6 +11,7 @@
 		$locationProvider.hashPrefix('!');
 
 		$routeProvider
+		    .when('/mixing', {templateUrl: 'mixing.html'})		
 		    .when('/blog/:year?/:month?/:day?/:title?', {templateUrl: 'html/ng-cms.doc.html'})
 		    .when('/docs/:article', {templateUrl: 'html/ng-cms.doc.html'})
 	    	.otherwise({ redirectTo: '/' });

@@ -1,6 +1,7 @@
 (function (ng) {'use strict';
     var defaultSettings={
-    	zenEdit:true,
+    	zenEdit:true,		// fullscreen edit on github
+    	ttlCache:86400000,  // 24h
         root:'',
         githubRepo:'<user>/<repo>',
         githubApi:'https://api.github.com/repos/',

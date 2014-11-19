@@ -73,10 +73,10 @@
 
                         //
                         // load markdown file from gihub repository
-                    } else if(attrs.markdownArticle){
-                        attrs.$observe('markdownArticle', function(markdownArticle){
-                            if(!markdownArticle)return;
-                            gitHubContent.loadSlug(markdownArticle).then(function(content) {
+                    } else if(attrs.markdownSlug){
+                        attrs.$observe('markdownSlug', function(markdownSlug){
+                            if(!markdownSlug)return;
+                            gitHubContent.loadSlug(markdownSlug).then(function(content) {
                               loadHtml(element,$sce.trustAsHtml(converter.makeHtml(content)).toString());
                             });
                         })                        
