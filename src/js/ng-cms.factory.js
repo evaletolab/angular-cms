@@ -121,11 +121,9 @@
         var loads={}
         return {
             initialize: function(custom) {
-              console.log('settings',settings)
               angular.extend(settings,custom)
               markdownRepo = settings.githubApi+settings.githubRepo;
               githubToken='access_token='+settings.githubToken
-              console.log('settings',settings)
 
               // Go fetch the GitHub tree with references to our Markdown content blobs
               var apiUrl = markdownRepo + '/git/trees/master?recursive=1'+'&'+githubToken;

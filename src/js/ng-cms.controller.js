@@ -13,7 +13,6 @@
 
         //
         // setup the scope
-        $scope.article=$routeParams.article;
         $scope.settings=settings;
 
         // return true if a name (eg. the/path) is include in the path
