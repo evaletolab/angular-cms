@@ -1,6 +1,6 @@
 {
   "name": "angular-cms",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/evaletolab/angular-cms",
   "authors": [
     "Olivier Evalet <evaleto@karibou.ch>"
@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "angular": "~1",
-    "angular-route": "~1",
     "angular-sanitize": "~1",
     "angular-resource": "~1",
     "showdown": "~0.3.1",
