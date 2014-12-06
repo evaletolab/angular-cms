@@ -166,7 +166,7 @@
               var apiUrl = markdownRepo + '/git/trees/master?recursive=1'+'&'+githubToken;
 
               // $http.get('/proxy?url=' + encodeURIComponent(apiUrl) + '&cache=1&ttl=600').success(function(data) {
-              $http.get(apiUrl).success(function(data) {
+              $http({method:'GET', url:apiUrl, withCredentials:false, cache:true}).success(function(data) {
                 contentIndex = buildIndexFromGitTree(data.tree);
                 $log.info("github index",contentIndex)
                 contentIndexDeferred.resolve(contentIndex);
