@@ -74,7 +74,7 @@
         set:setKey
       }
     }
- 
+
     //
     // factory gitHubContent, help to load markdown content from github
     //
@@ -181,7 +181,6 @@
             find:function(slug){
               // content is not ready
               if(!contentIndex)return '';
-
               var article = _.find(contentIndex.docArticles, {'slug':slug});
               if(article) return article;
               return _.find(contentIndex.pages, {'slug':slug});
@@ -192,13 +191,16 @@
                 return loads[slug].promise;
 
               // content is not ready
-              if(!contentIndex)return '';
+              var self=this;
+              // when content is ready
+              return this.contentIndex().then(function(index){
+                  var article = self.find(slug);
+                  return self.load(article);
+              });
 
-              var article = this.find(slug);
-              return this.load(article)
             },
             load: function(object) {
-              if(!object) return '';
+              if(!object) return $q.when('');
               var apiUrl = markdownRepo+'/contents/'+object.gitPath+'?'+githubToken;
               var accept={'Accept':'application/vnd.github.VERSION.raw'}
 
@@ -210,6 +212,7 @@
               $log.debug("fetching markdown content", apiUrl);
               $http({method:'GET', url:apiUrl,headers:accept})
                 .success(function(content) {
+                    $log.info('Content received ',content.length);
                   loads[object.slug].resolve(content);
                 }).error(function(err) {
                   $log.error("Error returned from API proxy", err);
