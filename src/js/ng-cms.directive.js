@@ -93,21 +93,21 @@
         //
         // edit on github on click 
         .directive('editMarkdown', ['gitHubContent','settings',function (gitHubContent, settings) {
-            var github='http://github.com/', opts='';
+            var github='http://github.com/',opts='';
             return {
                 restrict: 'A',
                 link: function (scope, element, attr, ctrl) {
-                    if(settings.zenEdit)opts='#fullscreen_blob_contents';
                     element.click(function(){
-                        console.log('click on',attr.editMarkdown)
+                        if(settings.zenEdit)opts='#fullscreen_blob_contents';                        
                         gitHubContent.contentIndex().then(function(index) {            
-                            var article = _.find(index.docArticles, {'slug': attr.editMarkdown});            
+                            var article = gitHubContent.find(attr.editMarkdown);            
                             window.location.href=github+settings.githubRepo+'/edit/master/'+article.gitPath+opts
                         });                        
                     })
                 }
             };
         }])
+
 
 
 
