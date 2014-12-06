@@ -210,7 +210,7 @@
               loads[object.slug] = $q.defer();
 
               $log.debug("fetching markdown content", apiUrl);
-              $http({method:'GET', url:apiUrl,headers:accept})
+              $http({method:'GET', url:apiUrl,headers:accept, withCredentials:false, cache:true})
                 .success(function(content) {
                     $log.info('Content received ',content.length);
                   loads[object.slug].resolve(content);
