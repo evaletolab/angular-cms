@@ -20,7 +20,8 @@
           function ($compile, $http, $parse, $sce, gitHubContent) {
             //
             // load markdown converter
-            var converter = new Showdown.converter();
+            // console.log('extensions',Object.keys(window.Showdown.extensions))
+            var converter = new Showdown.converter({ extensions: ['table','github'] });
             //
             // insert html in element and perform some UI tweaks 
             function loadHtml(element, html){
