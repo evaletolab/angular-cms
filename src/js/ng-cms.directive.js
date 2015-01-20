@@ -21,7 +21,8 @@
             //
             // load markdown converter
             // console.log('extensions',Object.keys(window.Showdown.extensions))
-            var converter = new Showdown.converter({ extensions: ['table','github'] });
+            // var converter = new Showdown.converter({ extensions: ['table','github'] });
+            var converter = new Remarkable();
             //
             // insert html in element and perform some UI tweaks 
             function loadHtml(element, html){
@@ -53,7 +54,7 @@
                     if (attrs.mdSrc) {
                         attrs.$observe('mdSrc', function(mdSrc,a){
                             $http.get(attrs.mdSrc).then(function(data) {
-                                element.html(converter.makeHtml(data.data));
+                                element.html(converter.render(data.data));
                             },function(data){
                                 //
                                 // silently quit on error 
@@ -69,7 +70,7 @@
                         // convert markdown from attribut 
                     } else if (attrs.markdownContent){                        
                         attrs.$observe('markdownContent', function(md) {
-                            loadHtml(element,converter.makeHtml(md))
+                            loadHtml(element,converter.render(md))
                         });
 
                         //
@@ -78,13 +79,13 @@
                         attrs.$observe('markdownSlug', function(markdownSlug){
                             if(!markdownSlug)return;
                             gitHubContent.loadSlug(markdownSlug).then(function(content) {
-                              loadHtml(element,$sce.trustAsHtml(converter.makeHtml(content)).toString());
+                              loadHtml(element,$sce.trustAsHtml(converter.render(content)).toString());
                             });
                         })                        
                     } else {
                         //
                         // else convert markdown from static text
-                        element.html(converter.makeHtml(element.text()));
+                        element.html(converter.render(element.text()));
                     }
 
                 }
