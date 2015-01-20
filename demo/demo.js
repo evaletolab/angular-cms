@@ -1,5 +1,5 @@
 (function (ng, undefined) {'use strict';
-	angular.module('main', ['ngResource','ngCMS'])
+	angular.module('main', ['ngResource','ngRoute','ngCMS'])
 
 	.config(function($routeProvider, $locationProvider, $provide) {
 		// Use the bang prefix for Google ajax crawlability

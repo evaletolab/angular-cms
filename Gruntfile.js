@@ -59,7 +59,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: './src/css/ng-cms.css',
-                        dest: './dist/ng-cms.css'
+                        dest: './demo/ng-cms.css'
                     },
                     {
                         src: './lib/bootstrap/bootstrap.css',
