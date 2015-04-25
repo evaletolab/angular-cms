@@ -44,7 +44,8 @@
             return {
                 restrict: 'E',
                 scope:{
-                    mdSrc:'@'
+                    mdSrc:'@',
+                    markdownContent:'='
                 },
                 replace: true,
                 link: function (scope, element, attrs) {
@@ -69,8 +70,10 @@
                         //
                         // convert markdown from attribut 
                     } else if (attrs.markdownContent){                        
-                        attrs.$observe('markdownContent', function(md) {
-                            loadHtml(element,converter.render(md))
+                        scope.$watch('markdownContent', function (md,sd) {
+                          if(md||scope.markdownContent){
+                            loadHtml(element,converter.render(md||scope.markdownContent))
+                          }
                         });
 
                         //
