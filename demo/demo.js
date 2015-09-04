@@ -23,7 +23,7 @@
   	gitHubContent.initialize({
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
-          githubRepo:'aerobatic/markdown-content',
+          githubRepo:'evaletolab/karibou-doc',
           githubToken:'545cf61edd29ad82f66f8436fccceb1187e48601'
       });
 	});
