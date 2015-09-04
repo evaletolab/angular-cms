@@ -24,7 +24,7 @@
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
           githubRepo:'evaletolab/karibou-doc',
-          githubToken:'545cf61edd29ad82f66f8436fccceb1187e48601'
+          githubToken:'0f067e48882f391a63d8c36b22b92ea806c39cad'
       });
 	});
 
