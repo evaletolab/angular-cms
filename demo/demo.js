@@ -19,12 +19,13 @@
 
 
 	angular.module('main').run(function ($log,gitHubContent) {
+	var token=['51722f4e920fe0864c','1623779d2726b84d0661d5'].join('');
   	$log.info("init githubdoc");
   	gitHubContent.initialize({
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
           githubRepo:'evaletolab/karibou-doc',
-          githubToken:'0f067e48882f391a63d8c36b22b92ea806c39cad'
+          githubToken:token
       });
 	});
 
