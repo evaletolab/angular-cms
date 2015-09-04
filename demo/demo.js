@@ -24,7 +24,7 @@
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
           githubRepo:'aerobatic/markdown-content',
-          githubToken:'2e36ce76cfb03358f0a38630007840e7cb432a24'
+          githubToken:'545cf61edd29ad82f66f8436fccceb1187e48601'
       });
 	});
 
