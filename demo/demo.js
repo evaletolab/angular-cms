@@ -20,12 +20,13 @@
 
 
 	angular.module('main').run(function ($log,gitHubContent) {
+	var token=['51722f4e920fe0864c','1623779d2726b84d0661d5'].join('');
   	$log.info("init githubdoc");
   	gitHubContent.initialize({
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
           githubRepo:'aerobatic/markdown-content',
-          githubToken:'2e36ce76cfb03358f0a38630007840e7cb432a24'
+          githubToken:token
       });
 	});
 
