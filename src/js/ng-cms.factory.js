@@ -3,8 +3,8 @@
     // define factories
     //
     ng.module('ngCMS')
+        .factory('localCache',localCache)
         .factory('gitHubContent', gitHubContent) 
-
 
 
     //
@@ -37,6 +37,43 @@
         return result;
     }
 
+
+    //
+    // factory localCache, keep external markdown in cache until settings.ttlCache
+    //
+    localCache.$inject=['$rootScope','$http','$q','$log','settings'];
+    function localCache($rootScope, $http, $q, $log,settings) {
+
+      function getKey(cacheKey){
+        // if there's a TTL that's expired, flush this item
+        var ttl = window.localStorage.getItem(cacheKey + 'cachettl');
+        if ( ttl && ttl < +new Date() ){
+          window.localStorage.removeItem( cacheKey );
+          window.localStorage.removeItem( cacheKey + 'cachettl' );
+          ttl = 'expired';
+          return null
+        }
+        var value=window.localStorage.getItem(cacheKey)
+        return  JSON.parse(value)
+      }
+
+      function setKey(cacheKey,value){
+        try {
+          window.localStorage.setItem( cacheKey, JSON.stringify(strdata) );
+          window.localStorage.setItem( cacheKey + 'cachettl', +new Date() + settings.ttlCache );
+        } catch (e) {
+          window.localStorage.removeItem( cacheKey );
+          window.localStorage.removeItem( cacheKey + 'cachettl' );
+        }        
+      }
+
+      //
+      //
+      return{
+        get:getKey,
+        set:setKey
+      }
+    }
 
     //
     // factory gitHubContent, help to load markdown content from github
@@ -83,7 +120,7 @@
                 // path is in the form docs/01-introduction.md
                 else if (path[0] === 'docs') {
                   var titleParts = path[1].split('_');
-                  var articleTitle = titleParts[1].strLeftBack('.');
+                  var articleTitle = titleParts[(titleParts.length>1)?1:0].strLeftBack('.');
                   var slug = slugify(articleTitle);
 
                   index.docArticles.push({
@@ -121,21 +158,19 @@
         var loads={}
         return {
             initialize: function(custom) {
-              console.log('settings',settings)
               angular.extend(settings,custom)
               markdownRepo = settings.githubApi+settings.githubRepo;
               githubToken='access_token='+settings.githubToken
-              console.log('settings',settings)
 
               // Go fetch the GitHub tree with references to our Markdown content blobs
               var apiUrl = markdownRepo + '/git/trees/master?recursive=1'+'&'+githubToken;
 
               // $http.get('/proxy?url=' + encodeURIComponent(apiUrl) + '&cache=1&ttl=600').success(function(data) {
-              $http.get(apiUrl).success(function(data) {
-                contentIndex = buildIndexFromGitTree(data.tree);
+              $http({method:'GET', url:apiUrl, withCredentials:false, cache:true}).then(function(result) {
+                contentIndex = buildIndexFromGitTree(result.data.tree);
                 $log.info("github index",contentIndex)
                 contentIndexDeferred.resolve(contentIndex);
-              }).error(function(err) {
+              },function(err) {
                 contentIndexDeferred.reject(err);
                 $log.error("Error initializing content index", err);
               });
@@ -143,18 +178,29 @@
             contentIndex: function() {
               return contentIndexDeferred.promise;
             },
+            find:function(slug){
+              // content is not ready
+              if(!contentIndex)return '';
+              var article = _.find(contentIndex.docArticles, {'slug':slug});
+              if(article) return article;
+              return _.find(contentIndex.pages, {'slug':slug});
+            },
             loadSlug:function(slug){
               // article is in cache
               if(loads[slug])
                 return loads[slug].promise;
 
               // content is not ready
-              if(!contentIndex)return '';
+              var self=this;
+              // when content is ready
+              return this.contentIndex().then(function(index){
+                  var article = self.find(slug);
+                  return self.load(article);
+              });
 
-              var article = _.find(contentIndex.docArticles, {'slug': slug});
-              return this.load(article)
             },
             load: function(object) {
+              if(!object) return $q.when('');
               var apiUrl = markdownRepo+'/contents/'+object.gitPath+'?'+githubToken;
               var accept={'Accept':'application/vnd.github.VERSION.raw'}
 
@@ -164,11 +210,11 @@
               loads[object.slug] = $q.defer();
 
               $log.debug("fetching markdown content", apiUrl);
-              $http({method:'GET', url:apiUrl,headers:accept})
-                .success(function(content) {
-                    $log.info('Content received ',content.length);
-                  loads[object.slug].resolve(content);
-                }).error(function(err) {
+              $http({method:'GET', url:apiUrl,headers:accept, withCredentials:false, cache:true})
+                .then(function(result) {
+                    $log.info('Content received ',result.data.length);
+                  loads[object.slug].resolve(result.data);
+                },function(err) {
                   $log.error("Error returned from API proxy", err);
                   loads[object.slug].reject(err);
                 });

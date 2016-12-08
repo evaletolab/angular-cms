@@ -13,7 +13,6 @@
 
         //
         // setup the scope
-        $scope.article=$routeParams.article;
         $scope.settings=settings;
 
         // return true if a name (eg. the/path) is include in the path
@@ -52,7 +51,7 @@
               return;
             }
 
-            var article = _.find(index.docArticles, {'slug': $routeParams.article});
+            var article = gitHubContent.find($routeParams.article);
             if (!article){
                 return $location.path('404');
             }

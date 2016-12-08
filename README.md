@@ -1,15 +1,17 @@
 # Angular CMS
 
-Angular CMS is a markdown content module for angular js. It allows you to quickly embed structured content from a github project to your application.
+Angular CMS is a markdown content module for angular application. With the module, you dont need additional infrastructure like LAMP or traditional CMS to embed rich content in your application. This module allows you to quickly embed structured content described on a github project.
 
-## Install it as angular module
+## Getting Started
+
+### Install it as angular module
 
 the easiest way is to run bower, then you just have to add the script and register the module `ng-cms` to you application:
 
 ```
 ./node_modules/.bin/bower install --save https://github.com/evaletolab/angular-cms/tarball/master
 ```
-Setup your angular application to make the help available
+### Setup your angular application to make the help available
 ```javascript
 // load the module
 var app=angular.module('app', ['ngCMS']);
@@ -25,7 +27,7 @@ app.run(function (gitHubContent) {
 
 // configure your project routes
 $routeProvider
-    // display blog in ngView with dated structure url 
+    // display your blog in ngView with dated structure url 
     .when('/blog/:year?/:month?/:day?/:title?', {templateUrl: 'html/ng-cms.doc.html'})
 
     // display a single page in ngView

@@ -10,6 +10,8 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('serve', ['connect:serve', 'watch']);
+    
+    grunt.loadNpmTasks('grunt-gh-pages');
 
     grunt.registerTask('dev', [
         'clean',
@@ -42,7 +44,7 @@ module.exports = function (grunt) {
           all: {
             dest: 'demo/depends.js',
             mainFiles:{
-                'showdown':['src/showdown.js']
+                'showdown':['src/showdown.js','extensions/github.js','extensions/table.js','extensions/twitter.js']
             },
             dependencies:{
                 'angular':['jquery','bootstrap','showdown']
@@ -59,7 +61,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         src: './src/css/ng-cms.css',
-                        dest: './dist/ng-cms.css'
+                        dest: './demo/ng-cms.css'
                     },
                     {
                         src: './lib/bootstrap/bootstrap.css',
@@ -88,7 +90,7 @@ module.exports = function (grunt) {
         cssmin: {
             css: {
                 files: {
-                    './dist/ng-cms.min.css': './dist/ng-cms.css'
+                    './demo/ng-cms.min.css': './demo/ng-cms.css'
                 }
             }
         },
@@ -115,6 +117,12 @@ module.exports = function (grunt) {
                 }
             }
         },
+        'gh-pages': {
+            options: {
+                base: '.'
+            },
+            src: ['**']
+        },        
         connect: {
             options: {
                 port: 3000,
