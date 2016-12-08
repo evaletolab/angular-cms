@@ -1,5 +1,5 @@
 (function (ng, undefined) {'use strict';
-	angular.module('main', ['ngResource','ngCMS'])
+	angular.module('main', ['ngResource','ngRoute','ngCMS'])
 
 	.config(function($routeProvider, $locationProvider, $provide) {
 		// Use the bang prefix for Google ajax crawlability
@@ -11,6 +11,7 @@
 		$locationProvider.hashPrefix('!');
 
 		$routeProvider
+		    .when('/mixing', {templateUrl: 'mixing.html'})		
 		    .when('/blog/:year?/:month?/:day?/:title?', {templateUrl: 'html/ng-cms.doc.html'})
 		    .when('/docs/:article', {templateUrl: 'html/ng-cms.doc.html'})
 	    	.otherwise({ redirectTo: '/' });
@@ -24,7 +25,7 @@
   	gitHubContent.initialize({
   		  zenEdit:false,
           root:'.', // specify the root of RDF entity routes
-          githubRepo:'evaletolab/karibou-doc',
+          githubRepo:'aerobatic/markdown-content',
           githubToken:token
       });
 	});

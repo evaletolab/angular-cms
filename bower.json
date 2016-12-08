@@ -1,11 +1,11 @@
 {
   "name": "angular-cms",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "homepage": "https://github.com/evaletolab/angular-cms",
   "authors": [
     "Olivier Evalet <evaleto@karibou.ch>"
   ],
-  "description": "simple way to embed your github documentation in your angular application",
+  "description": "simple way to embed your github markdown documentation in your angular application",
   "main": [
     "dist/ng-cms.js",
     "dist/ng-cms.css"
@@ -24,19 +24,13 @@
     "src",
     "tests"
   ],
-  "overrides": {
-    "showdown": {
-      "main": "src/showdown.js"
-    }
-  },
   "dependencies": {
     "angular": "~1",
-    "angular-route": "~1",
     "angular-sanitize": "~1",
     "angular-resource": "~1",
-    "showdown": "~0.3.1",
-    "bootstrap": "~3.2.0",
-    "underscore": "~1.7.0"
+    "bootstrap": "~3.1.0",
+    "underscore": "~1.7.0",
+    "remarkable": "~1.6.0"
   },
   "devDependencies": {
     "angular-mocks": "latest"

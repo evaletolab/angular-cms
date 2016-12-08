@@ -20,7 +20,9 @@
           function ($compile, $http, $parse, $sce, gitHubContent) {
             //
             // load markdown converter
-            var converter = new Showdown.converter();
+            // console.log('extensions',Object.keys(window.Showdown.extensions))
+            // var converter = new Showdown.converter({ extensions: ['table','github'] });
+            var converter = new Remarkable();
             //
             // insert html in element and perform some UI tweaks 
             function loadHtml(element, html){
@@ -42,7 +44,8 @@
             return {
                 restrict: 'E',
                 scope:{
-                    mdSrc:'@'
+                    mdSrc:'@',
+                    markdownContent:'='
                 },
                 replace: true,
                 link: function (scope, element, attrs) {
@@ -52,7 +55,7 @@
                     if (attrs.mdSrc) {
                         attrs.$observe('mdSrc', function(mdSrc,a){
                             $http.get(attrs.mdSrc).then(function(data) {
-                                element.html(converter.makeHtml(data.data));
+                                element.html(converter.render(data.data));
                             },function(data){
                                 //
                                 // silently quit on error 
@@ -67,23 +70,25 @@
                         //
                         // convert markdown from attribut 
                     } else if (attrs.markdownContent){                        
-                        attrs.$observe('markdownContent', function(md) {
-                            loadHtml(element,converter.makeHtml(md))
+                        scope.$watch('markdownContent', function (md,sd) {
+                          if(md||scope.markdownContent){
+                            loadHtml(element,converter.render(md||scope.markdownContent))
+                          }
                         });
 
                         //
                         // load markdown file from gihub repository
-                    } else if(attrs.markdownArticle){
-                        attrs.$observe('markdownArticle', function(markdownArticle){
-                            if(!markdownArticle)return;
-                            gitHubContent.loadSlug(markdownArticle).then(function(content) {
-                              loadHtml(element,$sce.trustAsHtml(converter.makeHtml(content)).toString());
+                    } else if(attrs.markdownSlug){
+                        attrs.$observe('markdownSlug', function(markdownSlug){
+                            if(!markdownSlug)return;
+                            gitHubContent.loadSlug(markdownSlug).then(function(content) {
+                              loadHtml(element,$sce.trustAsHtml(converter.render(content)).toString());
                             });
                         })                        
                     } else {
                         //
                         // else convert markdown from static text
-                        element.html(converter.makeHtml(element.text()));
+                        element.html(converter.render(element.text()));
                     }
 
                 }
@@ -93,21 +98,21 @@
         //
         // edit on github on click 
         .directive('editMarkdown', ['gitHubContent','settings',function (gitHubContent, settings) {
-            var github='http://github.com/', opts='';
+            var github='http://github.com/',opts='';
             return {
                 restrict: 'A',
                 link: function (scope, element, attr, ctrl) {
-                    if(settings.zenEdit)opts='#fullscreen_blob_contents';
                     element.click(function(){
-                        console.log('click on',attr.editMarkdown)
+                        if(settings.zenEdit)opts='#fullscreen_blob_contents';                        
                         gitHubContent.contentIndex().then(function(index) {            
-                            var article = _.find(index.docArticles, {'slug': attr.editMarkdown});            
+                            var article = gitHubContent.find(attr.editMarkdown);            
                             window.location.href=github+settings.githubRepo+'/edit/master/'+article.gitPath+opts
                         });                        
                     })
                 }
             };
         }])
+
 
 
 

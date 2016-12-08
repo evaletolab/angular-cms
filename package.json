@@ -1,8 +1,8 @@
 {
-  "name": "nextprot-ui-help",
-  "version": "1.3.0",
+  "name": "angular-cms",
+  "version": "1.3.1",
   "description": "",
-  "main": "dist/np-ui-help.js",
+  "main": "dist/ng-cms.js",
   "scripts": {
     "test": "node ./node_modules/.bin/grunt karma-CI"
   },
@@ -34,7 +34,7 @@
     "load-grunt-tasks": "^0.6.0"
   },
   "dependencies": {
-    "bower": "^1.3.12",
+    "bower": "1.4.x",
     "grunt-cli": "^0.1.13"
   }
 }
