@@ -88,7 +88,7 @@ module.exports = function (grunt) {
         cssmin: {
             css: {
                 files: {
-                    './dist/ng-cms.min.css': './dist/ng-cms.css'
+                    './demo/ng-cms.min.css': './demo/ng-cms.css'
                 }
             }
         },

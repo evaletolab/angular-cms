@@ -120,7 +120,7 @@
                 // path is in the form docs/01-introduction.md
                 else if (path[0] === 'docs') {
                   var titleParts = path[1].split('_');
-                  var articleTitle = titleParts[1].strLeftBack('.');
+                  var articleTitle = titleParts[(titleParts.length>1)?1:0].strLeftBack('.');
                   var slug = slugify(articleTitle);
 
                   index.docArticles.push({
@@ -166,11 +166,11 @@
               var apiUrl = markdownRepo + '/git/trees/master?recursive=1'+'&'+githubToken;
 
               // $http.get('/proxy?url=' + encodeURIComponent(apiUrl) + '&cache=1&ttl=600').success(function(data) {
-              $http({method:'GET', url:apiUrl, withCredentials:false, cache:true}).success(function(data) {
-                contentIndex = buildIndexFromGitTree(data.tree);
+              $http({method:'GET', url:apiUrl, withCredentials:false, cache:true}).then(function(result) {
+                contentIndex = buildIndexFromGitTree(result.data.tree);
                 $log.info("github index",contentIndex)
                 contentIndexDeferred.resolve(contentIndex);
-              }).error(function(err) {
+              },function(err) {
                 contentIndexDeferred.reject(err);
                 $log.error("Error initializing content index", err);
               });
@@ -211,10 +211,10 @@
 
               $log.debug("fetching markdown content", apiUrl);
               $http({method:'GET', url:apiUrl,headers:accept, withCredentials:false, cache:true})
-                .success(function(content) {
-                    $log.info('Content received ',content.length);
-                  loads[object.slug].resolve(content);
-                }).error(function(err) {
+                .then(function(result) {
+                    $log.info('Content received ',result.data.length);
+                  loads[object.slug].resolve(result.data);
+                },function(err) {
                   $log.error("Error returned from API proxy", err);
                   loads[object.slug].reject(err);
                 });

@@ -59,6 +59,7 @@ body {
 .nav-sidebar > li > a {
   padding-right: 20px;
   padding-left: 20px;
+  padding: 2px 5px;
 }
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
